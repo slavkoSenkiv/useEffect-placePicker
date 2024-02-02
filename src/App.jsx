@@ -7,10 +7,14 @@ import DeleteConfirmation from "./components/DeleteConfirmation.jsx";
 import logoImg from "./assets/logo.png";
 import { sortPlacesByDistance } from "./loc.js";
 
-const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
-const storedPlaces = storedIds.map((id) =>
+function getStoredIds(key) {
+  return JSON.parse(localStorage.getItem("key")) || [];
+}
+
+const storedPlaces = getStoredIds("selectedPlaces").map((id) =>
   AVAILABLE_PLACES.find((place) => place.id === id)
 );
+
 function App() {
   const selectedPlace = useRef();
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -43,14 +47,14 @@ function App() {
         return prevPickedPlaces;
       }
       const place = AVAILABLE_PLACES.find((place) => place.id === id);
-      return [place, ...prevPickedPlaces];
+      return [...prevPickedPlaces, place];
     });
 
-    const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
+    const storedIds = getStoredIds("selectedPlaces");
     if (storedIds.indexOf(id) === -1) {
       localStorage.setItem(
         "selectedPlaces",
-        JSON.stringify([id, ...storedIds])
+        JSON.stringify([...storedIds, id])
       );
     }
   }
@@ -61,10 +65,13 @@ function App() {
     );
     setModalIsOpen(false);
 
-    const storedIds = JSON.parse(localStorage.getItem("selectedPlaces")) || [];
     localStorage.setItem(
       "selectedPlaces",
-      JSON.stringify(storedIds.filter((id) => id !== selectedPlace.current))
+      JSON.stringify(
+        getStoredIds("selectedPlaces").filter(
+          (id) => id !== selectedPlace.current
+        )
+      )
     );
   }, []);
 

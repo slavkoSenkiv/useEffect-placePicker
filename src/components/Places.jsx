@@ -10,7 +10,7 @@ export default function Places({ title, places, fallbackText, onSelectPlace }) {
               <button onClick={() => onSelectPlace(place.id)}>
                 <img src={place.image.src} alt={place.image.alt} />
                 <h3>{place.title}</h3>
-              </button>s
+              </button>
             </li>
           ))}
         </ul>
