@@ -1,14 +1,16 @@
 import { useState } from "react";
 import logo from "./assets/logo.png";
-import Places from "./components/Places";
 import { AVAILABLE_PLACES } from "./data";
 import { sortPlacesByDistance } from "./loc";
 import Modal from "./components/Modal";
+import Places from "./components/Places";
+import DeleteConfirmation from "./components/DeleteConfirmation";
 
 export default function App() {
   const [placesToVisit, setPlacesToVisit] = useState([]);
   const [availablePlaces, setAvailablePlaces] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
+  const [placeToRemove, setPlaceToRemove] = useState();
 
   navigator.geolocation.getCurrentPosition((position) => {
     const sortedPlaces = sortPlacesByDistance(
@@ -26,20 +28,29 @@ export default function App() {
     });
   }
 
-  function handleRomovePlace(placeId) {
+  function handleStartRemovePlace(placeId) {
     setModalOpen(true);
+    setPlaceToRemove(placeId);
+  }
+
+  function handleRomovePlace(placeId) {
     setPlacesToVisit((prevPlacesToVisit) => {
       const updatedPlacesToVisit = prevPlacesToVisit.filter(
         (place) => place.id != placeId
       );
       return updatedPlacesToVisit;
     });
+    setPlaceToRemove();
+    setModalOpen(false);
   }
 
   return (
     <>
       <Modal open={modalOpen}>
-        <h1>Hello</h1>
+        <DeleteConfirmation
+          onConfirm={handleRomovePlace}
+          onCancel={() => setModalOpen(false)}
+        />
       </Modal>
       <header>
         <img src={logo} alt="" />
@@ -51,7 +62,7 @@ export default function App() {
         categoryTitle="I'd like to visit"
         fallbackText="Select the place you want to visit"
         places={placesToVisit}
-        onSelect={handleRomovePlace}
+        onSelect={handleStartRemovePlace}
       />
 
       <Places

@@ -9,7 +9,7 @@ export default function Modal({ open, children }) {
     } else {
       dialog.current.close();
     }
-  }, []);
+  }, [open]);
 
   return (
     <dialog ref={dialog} className="modal">
