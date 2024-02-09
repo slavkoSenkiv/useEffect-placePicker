@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import logo from "./assets/logo.png";
 import { AVAILABLE_PLACES } from "./data";
 import { sortPlacesByDistance } from "./loc";
@@ -37,10 +37,9 @@ export default function App() {
   function handleStartRemovePlace(placeId) {
     setModalOpen(true);
     selectedPlace.current = placeId;
-    //setPlaceToRemoveId(placeId);
   }
 
-  function handleStartRemovePlace() {
+  function handleStopRemovePlace() {
     setModalOpen(false);
   }
 
@@ -48,18 +47,34 @@ export default function App() {
     setPlacesToVisit((prevPlacesToVisit) => {
       prevPlacesToVisit.filter((place) => place.id !== selectedPlace.current);
     });
-    //setPlaceToRemoveId();
     setModalOpen(false);
 
     // todo remove place from cache
   }
+
+  /*   function handleRemovePlace() {
+    setPlacesToVisit((prevPlacesToVisit) => {
+      const updatedPLacesToVisit = prevPlacesToVisit.filter((place) => place.id !== selectedPlace.current);
+      return updatedPLacesToVisit;
+    });
+    setModalOpen(false);
+
+    // todo remove place from cache
+  } */
+
+  /*   const handleRemovePlace = useCallback(function handleRemovePlace() {
+    setPlacesToVisit((prevPlacesToVisit) => 
+      prevPlacesToVisit.filter((place) => place.id !== selectedPlace.current)
+    );
+    setModalOpen(false);
+  }, []); */
 
   return (
     <>
       <Modal open={modalOpen}>
         <DeleteConfirmation
           onConfirm={handleRemovePlace}
-          onCancel={handleStartRemovePlace}
+          onCancel={handleStopRemovePlace}
         />
       </Modal>
       <header>
