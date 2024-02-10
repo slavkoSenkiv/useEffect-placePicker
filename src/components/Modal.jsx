@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-export default function Modal({ open, children }) {
+export default function Modal({ open, children, onClose }) {
   const dialog = useRef();
 
   useEffect(() => {
@@ -12,8 +12,8 @@ export default function Modal({ open, children }) {
   }, [open]);
 
   return (
-    <dialog ref={dialog} className="modal">
-      {children}
+    <dialog ref={dialog} onClose={onClose} className="modal">
+      {open ? children : null}
     </dialog>
   );
 }

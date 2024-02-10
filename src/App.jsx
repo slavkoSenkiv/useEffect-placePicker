@@ -10,7 +10,7 @@ import DeleteConfirmation from "./components/DeleteConfirmation";
 
 export default function App() {
   const selectedPlace = useRef();
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalIsOpen, setmodalIsOpen] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState([]);
   const [placesToVisit, setPlacesToVisit] = useState([]);
   //const [placeToRemoveId, setPlaceToRemoveId] = useState(); //?
@@ -35,43 +35,26 @@ export default function App() {
   }
 
   function handleStartRemovePlace(placeId) {
-    setModalOpen(true);
+    setmodalIsOpen(true);
     selectedPlace.current = placeId;
   }
 
   function handleStopRemovePlace() {
-    setModalOpen(false);
+    setmodalIsOpen(false);
   }
 
-  function handleRemovePlace() {
-    setPlacesToVisit((prevPlacesToVisit) => {
-      prevPlacesToVisit.filter((place) => place.id !== selectedPlace.current);
-    });
-    setModalOpen(false);
-
-    // todo remove place from cache
-  }
-
-  /*   function handleRemovePlace() {
-    setPlacesToVisit((prevPlacesToVisit) => {
-      const updatedPLacesToVisit = prevPlacesToVisit.filter((place) => place.id !== selectedPlace.current);
-      return updatedPLacesToVisit;
-    });
-    setModalOpen(false);
-
-    // todo remove place from cache
-  } */
-
-  /*   const handleRemovePlace = useCallback(function handleRemovePlace() {
-    setPlacesToVisit((prevPlacesToVisit) => 
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
+    setPlacesToVisit((prevPlacesToVisit) =>
       prevPlacesToVisit.filter((place) => place.id !== selectedPlace.current)
     );
-    setModalOpen(false);
-  }, []); */
+    setmodalIsOpen(false);
+
+    // todo remove place from cache
+  }, []);
 
   return (
     <>
-      <Modal open={modalOpen}>
+      <Modal open={modalIsOpen} onClose={handleStopRemovePlace}>
         <DeleteConfirmation
           onConfirm={handleRemovePlace}
           onCancel={handleStopRemovePlace}
