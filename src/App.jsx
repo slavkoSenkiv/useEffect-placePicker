@@ -26,9 +26,14 @@ export default function App() {
 
   function handleSelectPlace(placeId) {
     setPlacesToVisit((prevPlacesToVisit) => {
-      //todo add case if place is already selected
-      const placeToAdd = AVAILABLE_PLACES.find((place) => place.id === placeId);
-      return [...prevPlacesToVisit, placeToAdd];
+      if (placesToVisit.some((place) => place.id === placeId)) {
+        return prevPlacesToVisit;
+      } else {
+        const placeToAdd = AVAILABLE_PLACES.find(
+          (place) => place.id === placeId
+        );
+        return [...prevPlacesToVisit, placeToAdd];
+      }
 
       // todo add place to cache
     });
@@ -60,6 +65,7 @@ export default function App() {
           onCancel={handleStopRemovePlace}
         />
       </Modal>
+
       <header>
         <img src={logo} alt="" />
         <h1>Placepiker</h1>
