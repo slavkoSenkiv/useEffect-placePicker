@@ -14,7 +14,7 @@ const storedPlaces = getStoredIds(localStorageKey).map((id) =>
   AVAILABLE_PLACES.find((place) => place.id === id)
 );
 
-export default function App() {
+function App() {
   const selectedPlace = useRef();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState([]);
@@ -98,3 +98,5 @@ export default function App() {
     </>
   );
 }
+
+export default App;
