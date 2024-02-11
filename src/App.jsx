@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import logo from "./assets/logo.png";
 import { AVAILABLE_PLACES } from "./data";
 import { sortPlacesByDistance } from "./loc";
@@ -6,14 +6,19 @@ import Modal from "./components/Modal";
 import Places from "./components/Places";
 import DeleteConfirmation from "./components/DeleteConfirmation";
 
-//todo add grab selected places from cache if any there
+function getStoredId(key) {
+  return JSON.parse(localStorage.getItem(key)) || [];
+}
+const localStorageKey = "selectedIDs";
+const storedPlaces = getStoredId(localStorageKey).map((storedId) =>
+  AVAILABLE_PLACES.find((place) => place.id === storedId)
+);
 
 export default function App() {
   const selectedPlace = useRef();
   const [modalIsOpen, setmodalIsOpen] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState([]);
-  const [placesToVisit, setPlacesToVisit] = useState([]);
-  //const [placeToRemoveId, setPlaceToRemoveId] = useState(); //?
+  const [placesToVisit, setPlacesToVisit] = useState(storedPlaces);
 
   navigator.geolocation.getCurrentPosition((position) => {
     const sortedPlaces = sortPlacesByDistance(
@@ -28,15 +33,15 @@ export default function App() {
     setPlacesToVisit((prevPlacesToVisit) => {
       if (placesToVisit.some((place) => place.id === placeId)) {
         return prevPlacesToVisit;
-      } else {
-        const placeToAdd = AVAILABLE_PLACES.find(
-          (place) => place.id === placeId
-        );
-        return [...prevPlacesToVisit, placeToAdd];
       }
-
-      // todo add place to cache
+      const placeToAdd = AVAILABLE_PLACES.find((place) => place.id === placeId);
+      return [...prevPlacesToVisit, placeToAdd];
     });
+
+    const storedIds = getStoredId(localStorageKey);
+    if (storedIds.indexOf(placeId) === -1) {
+      localStorage.setItem(localStorageKey, JSON.stringify([...storedIds, placeId]));
+    }
   }
 
   function handleStartRemovePlace(placeId) {
@@ -54,7 +59,10 @@ export default function App() {
     );
     setmodalIsOpen(false);
 
-    // todo remove place from cache
+    const storedIds = getStoredId(localStorageKey);
+    localStorage.setItem(localStorageKey, JSON.stringify(
+      storedIds.filter((storedId) => storedId != selectedPlace.current)
+    ))
   }, []);
 
   return (
