@@ -6,19 +6,19 @@ import Modal from "./components/Modal";
 import Places from "./components/Places";
 import DeleteConfirmation from "./components/DeleteConfirmation";
 
-function getStoredId(key) {
+function getStoredIds(key) {
   return JSON.parse(localStorage.getItem(key)) || [];
 }
 const localStorageKey = "selectedIDs";
-const storedPlaces = getStoredId(localStorageKey).map((storedId) =>
-  AVAILABLE_PLACES.find((place) => place.id === storedId)
+const storedPlaces = getStoredIds(localStorageKey).map((id) =>
+  AVAILABLE_PLACES.find((place) => place.id === id)
 );
 
 export default function App() {
   const selectedPlace = useRef();
-  const [modalIsOpen, setmodalIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
   const [availablePlaces, setAvailablePlaces] = useState([]);
-  const [placesToVisit, setPlacesToVisit] = useState(storedPlaces);
+  const [pickedPlaces, setPickedPlaces] = useState(storedPlaces);
 
   navigator.geolocation.getCurrentPosition((position) => {
     const sortedPlaces = sortPlacesByDistance(
@@ -29,39 +29,41 @@ export default function App() {
     setAvailablePlaces(sortedPlaces);
   });
 
-  function handleSelectPlace(placeId) {
-    setPlacesToVisit((prevPlacesToVisit) => {
-      if (placesToVisit.some((place) => place.id === placeId)) {
-        return prevPlacesToVisit;
-      }
-      const placeToAdd = AVAILABLE_PLACES.find((place) => place.id === placeId);
-      return [...prevPlacesToVisit, placeToAdd];
-    });
-
-    const storedIds = getStoredId(localStorageKey);
-    if (storedIds.indexOf(placeId) === -1) {
-      localStorage.setItem(localStorageKey, JSON.stringify([...storedIds, placeId]));
-    }
-  }
-
-  function handleStartRemovePlace(placeId) {
-    setmodalIsOpen(true);
-    selectedPlace.current = placeId;
+  function handleStartRemovePlace(id) {
+    setModalIsOpen(true);
+    selectedPlace.current = id;
   }
 
   function handleStopRemovePlace() {
-    setmodalIsOpen(false);
+    setModalIsOpen(false);
   }
 
-  const handleRemovePlace = useCallback(function handleRemovePlace() {
-    setPlacesToVisit((prevPlacesToVisit) =>
-      prevPlacesToVisit.filter((place) => place.id !== selectedPlace.current)
-    );
-    setmodalIsOpen(false);
+  function handleSelectPlace(id) {
+    setPickedPlaces((prevPickedPlaces) => {
+      if (prevPickedPlaces.some((place) => place.id === id)) {
+        return prevPickedPlaces;
+      }
+      const placeToAdd = AVAILABLE_PLACES.find((place) => place.id === id);
+      return [...prevPickedPlaces, placeToAdd];
+    });
 
-    const storedIds = getStoredId(localStorageKey);
+    const storedIds = getStoredIds(localStorageKey);
+    if (storedIds.indexOf(id) === -1) {
+      localStorage.setItem(localStorageKey, JSON.stringify([...storedIds, id]));
+    }
+  }
+
+
+
+  const handleRemovePlace = useCallback(function handleRemovePlace() {
+    setPickedPlaces((prevPickedPlaces) =>
+      prevPickedPlaces.filter((place) => place.id !== selectedPlace.current)
+    );
+    setModalIsOpen(false);
+
+    const storedIds = getStoredIds(localStorageKey);
     localStorage.setItem(localStorageKey, JSON.stringify(
-      storedIds.filter((storedId) => storedId != selectedPlace.current)
+      storedIds.filter((id) => id != selectedPlace.current)
     ))
   }, []);
 
@@ -83,7 +85,7 @@ export default function App() {
       <Places
         categoryTitle="I'd like to visit"
         fallbackText="Select the place you want to visit"
-        places={placesToVisit}
+        places={pickedPlaces}
         onSelect={handleStartRemovePlace}
       />
 

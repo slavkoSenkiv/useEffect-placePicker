@@ -9,11 +9,10 @@ export default function ProgressBar({ timer }) {
         prevTime = prevTime - 10;
         return prevTime;
       });
-
-      return () => {
-        clearInterval(interval);
-      };
     }, 10);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return <progress value={remainingTime} max={timer} />;

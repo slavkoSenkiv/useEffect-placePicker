@@ -5,7 +5,7 @@ export default function Places({
   onSelect,
 }) {
   return (
-    <div className="places-category">
+    <section className="places-category">
       <h2>{categoryTitle}</h2>
       {places.length === 0 ? (
         <p className="fallback-text">{fallbackText}</p>
@@ -21,6 +21,6 @@ export default function Places({
           ))}
         </ul>
       )}
-    </div>
+    </section>
   );
 }
